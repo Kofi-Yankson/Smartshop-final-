@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model StoreAccount {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  store    Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId  String @unique
+}
+
+model Store {
+  id          String    @id @default(uuid())
+  name        String
+  category    String    @default("Retail")  
+  description String    @default("")
+  location    String
+  latitude    Float     @default(5.7744)  
+  longitude   Float     @default(-0.2133)  
+  searchCount Int       @default(0)
+  products    Product[]
+  storeAccount StoreAccount?
+}
+
+model Product {
+  id             String @id @default(uuid())
+  name           String
+  priceInPeswass Int
+  imagePath      String
+  description    String @default("")  
+  category       String @default("General")  
+  isAvailable    Boolean @default(false)
+  searchCount    Int @default(0)
+  store          Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId        String
+}
+
+model CustomerAccount {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String @unique
+}
+
+model Customer {
+  id        String @id @default(uuid())
+  name      String
+  location  String
+  latitude  Float @default(5.7744)  
+  longitude Float @default(-0.2133)  
+  account   CustomerAccount?
+}
